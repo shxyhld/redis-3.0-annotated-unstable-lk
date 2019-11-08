@@ -550,13 +550,10 @@ dictEntry *dictAddRaw(dict *d, void *key)
     // 如果字典正在 rehash ，那么将新键添加到 1 号哈希表
     // 否则，将新键添加到 0 号哈希表
 
-    /* TODO :此处的正在进行rehash表示的是ht[0]->used == ht[0]->size达到了rehash的条件，然后将旧哈希表（ht[0]）中的节点迁移到新哈希表中(ht[1])吗？
-    *  1、渐进式迁移是一个长时间迁移过程吗？如果避免出现，ht[0]未完全迁移至ht[1],ht[1]又达到了rehash的条件。
-    *  2、rehash的数据迁移是在ht[0]和ht[1]之间交替进行的吗？（即第一次ht[0]达到rehash条件，将数据迁移至ht[1],那么等到ht[1]达到rehash条件后，
-    *   又会将数据迁移至ht[0]）,此处的代码看起来只有将数据从ht[0]迁移到ht[1].
-    *   A:在数据迁移完毕后，会将ht[1]赋哈希表中ht[0],同时重置ht[1]，下次需要迁移时，仍旧可以从ht[0]迁移至ht[1]。
+    /* LK_NOTE：下面的ht表示正在使用的hash表
+    *  如果正在进行rehash，说明hash表中的数据流向是从ht[0]--->ht[1]，那么我们在新添加数据的时候，就会直接将数据添加到ht[1]中，ht = ht[1]。
+    *  如果rehash已经结束，那么就会将新数据添加到ht[0]中，即ht = ht[0]。
     */
-
     ht = dictIsRehashing(d) ? &d->ht[1] : &d->ht[0];
     // 为新节点分配空间
     entry = zmalloc(sizeof(*entry));
