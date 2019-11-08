@@ -327,11 +327,18 @@
 #define REDIS_OP_INTER 2
 
 /* Redis maxmemory strategies */
+// Redis 内存释放策略
+// 从设置了过期时间的数据集中，选择最近最久未使用的数据释放。
 #define REDIS_MAXMEMORY_VOLATILE_LRU 0
+// 从设置了过期时间的数据集中，选择马上就要过期的数据进行释放。
 #define REDIS_MAXMEMORY_VOLATILE_TTL 1
+// 从设置了过期时间的数据集中，随机选择数据进行释放。
 #define REDIS_MAXMEMORY_VOLATILE_RANDOM 2
+// 从设置了过期时间和未设置过期时间的数据集中，选择最近最久未使用的数据释放。
 #define REDIS_MAXMEMORY_ALLKEYS_LRU 3
+// 从设置了过期时间和未设置过期时间的数据集中，随机选择数据释放。
 #define REDIS_MAXMEMORY_ALLKEYS_RANDOM 4
+// 不释放数据，内存超过限制后再次写入返回错误。
 #define REDIS_MAXMEMORY_NO_EVICTION 5
 #define REDIS_DEFAULT_MAXMEMORY_POLICY REDIS_MAXMEMORY_NO_EVICTION
 
