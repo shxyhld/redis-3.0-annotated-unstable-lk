@@ -106,12 +106,14 @@ robj *createStringObject(char *ptr, size_t len) {
  * 这个字符串的对象保存的可以是 INT 编码的 long 值，
  * 也可以是 RAW 编码的、被转换成字符串的 long long 值。
  */
+//LK_NOTE: redis 对象共享
 robj *createStringObjectFromLongLong(long long value) {
 
     robj *o;
 
     // value 的大小符合 REDIS 共享整数的范围
     // 那么返回一个共享对象
+    // LK_NOTE: 从这里看来，在redis整数对象里面，只对[0-10000]这个范围内的整数进行了共享。
     if (value >= 0 && value < REDIS_SHARED_INTEGERS) {
         incrRefCount(shared.integers[value]);
         o = shared.integers[value];
@@ -1055,6 +1057,7 @@ void objectCommand(redisClient *c) {
     robj *o;
 
     // 返回对戏哪个的引用计数
+    //LK_NOTE: redis 对象共享 从这里可以查看对象的引用计数
     if (!strcasecmp(c->argv[1]->ptr,"refcount") && c->argc == 3) {
         if ((o = objectCommandLookupOrReply(c,c->argv[2],shared.nullbulk))
                 == NULL) return;

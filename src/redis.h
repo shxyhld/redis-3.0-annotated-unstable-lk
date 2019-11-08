@@ -455,7 +455,7 @@ typedef struct redisDb {
     // 数据库键空间，保存着数据库中的所有键值对
     dict *dict;                 /* The keyspace for this DB */
 
-    // 键的过期时间，字典的键为键，字典的值为过期事件 UNIX 时间戳
+    // 键的过期时间，字典的键为键，字典的值为过期时间 UNIX 时间戳
     dict *expires;              /* Timeout of keys with a timeout set */
 
     // 正处于阻塞状态的键
@@ -694,6 +694,7 @@ struct saveparam {
 };
 
 // 通过复用来减少内存碎片，以及减少操作耗时的共享对象
+// LK_NOTE: redis 对象共享
 struct sharedObjectsStruct {
     robj *crlf, *ok, *err, *emptybulk, *czero, *cone, *cnegone, *pong, *space,
     *colon, *nullbulk, *nullmultibulk, *queued,
